@@ -1,0 +1,14 @@
+{
+  "name": "vsu-password-manager",
+  "version": "1.0.0",
+  "description": "Password manager",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "password manager"
+  ],
+  "author": "Maldan",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

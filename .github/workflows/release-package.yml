@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14.15.3"
+          registry-url: https://registry.npmjs.org/
+      - run: git config --global user.name maldan
+      - run: git config --global user.email blackwanted@yandex.ru
+      - run: node -v
+      - run: npm install -g nexe
+      - run: cd backend && npm ci && npm run build && cd bin && nexe ./index.js -t windows-x86-14.15.3 -o app.exe
+      - run: cd frontend && npm ci && npm run build
+      - run: mkdir bundle
+      - run: cp ./backend/bin/app.exe ./bundle
+      - run: cp -r ./frontend/build ./bundle
+      - run: sudo apt install zip
+      - run: zip -r application.zip ./bundle/
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          title: "Development Build"
+          files: |
+            application.zip
