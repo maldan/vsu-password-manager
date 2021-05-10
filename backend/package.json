@@ -13,7 +13,7 @@
   "author": "Maldan",
   "license": "MIT",
   "dependencies": {
-    "@maldan/tslib-rest-server": "file:../../../ts_lib/rest-server",
+    "@maldan/tslib-rest-server": "^2.4.1",
     "dotenv": "^8.2.0",
     "fs-extra": "^9.1.0",
     "moment": "^2.29.1",
