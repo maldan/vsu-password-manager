@@ -12,6 +12,10 @@ import { Options, Vue } from "vue-class-component";
 })
 export default class HelloWorld extends Vue {
   msg!: string;
+
+  mounted() {
+    console.log(process.env.VUE_APP_API_URL);
+  }
 }
 </script>
 

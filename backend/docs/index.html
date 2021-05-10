@@ -166,6 +166,11 @@
           border: 1px solid #5d5d5d;
         }
 
+        .description hr {
+          margin-bottom: 25px;
+          margin-top: 25px;
+        }
+
         ::-webkit-calendar-picker-indicator {
           filter: invert(1);
           opacity: 0.5;
@@ -173,7 +178,7 @@
       </style>
     </head>
     <body>
-    <div class="description"></div>
+    <div class="description" style="margin-bottom: 50px;"></div>
     
     <script>
       function buildJson(json) {
@@ -233,6 +238,10 @@
           });
           makeQuery(path, method, formData, id, isReturnAccessToken);
         });
+      });
+
+      document.querySelectorAll('.window-location-origin').forEach(x => {
+        x.innerHTML = window.location.origin;
       });
     </script>
     </body></html>
