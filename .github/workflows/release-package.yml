@@ -31,9 +31,9 @@ jobs:
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          title: Release ${{ github.event.release.tag_name }}
+          title: Release ${{ github.ref }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          automatic_release_tag: ${{ github.event.release.tag_name }}
+          automatic_release_tag: ${{ github.ref }}
           files: |
             application.zip
