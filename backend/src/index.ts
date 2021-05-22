@@ -15,7 +15,7 @@ import { hideBin } from 'yargs/helpers';
   } else {
     port = await Portfinder.getPortPromise({
       port: 40000, // minimum port
-      stopPort: 50000, // maximum port
+      stopPort: 50000, // maximum port sasage
     });
   }
 
