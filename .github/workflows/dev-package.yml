@@ -17,10 +17,8 @@ jobs:
       - run: git config --global user.name maldan
       - run: git config --global user.email blackwanted@yandex.ru
 
-      - run: git tag | sort -V | tail -1
-      - run: TAG_VERSION=`git tag | sort -V | tail -1`
-      - run: echo "RELEASE_VERSION=$TAG_VERSION" >> $GITHUB_ENV
-      - run: echo $TAG_VERSION
+      - run: echo "RELEASE_VERSION=`git tag | sort -V | tail -1`" >> $GITHUB_ENV
+      - run: echo ${{ env.RELEASE_VERSION }}
 
       - run: wget https://raw.githubusercontent.com/maldan/npm-semver/main/semver.js
       - run: node ./semver.js
