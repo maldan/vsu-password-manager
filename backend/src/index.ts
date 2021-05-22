@@ -8,22 +8,25 @@ import { hideBin } from 'yargs/helpers';
 
 (async () => {
   const argv = Yargs(hideBin(process.argv)).argv;
-  let port = 0;
+  /*let port = 0;
   console.log(argv);
   if (argv.debug === 'true') {
     port = 16000;
   } else {
     port = await Portfinder.getPortPromise({
       port: 40000, // minimum port
-      stopPort: 50000, // maximum port sasage
+      stopPort: 50000, // maximum port
     });
-  }
+  }*/
+
+  const port = argv.port || 16000;
+  console.log(port);
 
   const buildPath = process.cwd().replace(/\\/g, '/') + '/build';
   const web = new WebServer([new WS_Router('', [], [buildPath])]);
-  web.listen(port);
+  web.listen(Number(port));
 
-  /*const child = WebView.spawn({
+  const child = WebView.spawn({
     // options for webview
     title: 'My App',
     width: 1280,
@@ -35,5 +38,5 @@ import { hideBin } from 'yargs/helpers';
   });
   child.on('exit', () => {
     process.exit(0);
-  });*/
+  });
 })();
