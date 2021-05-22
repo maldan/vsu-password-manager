@@ -9,7 +9,7 @@ import { hideBin } from 'yargs/helpers';
 (async () => {
   const argv = Yargs(hideBin(process.argv)).argv;
   let port = 0;
-
+  console.log(argv);
   if (argv.debug === 'true') {
     port = 16000;
   } else {

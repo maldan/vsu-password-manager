@@ -1,9 +1,10 @@
 name: Publish
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types: [closed]
 
 jobs:
   build:
@@ -25,20 +26,13 @@ jobs:
       - run: cp ./backend/bin/app.exe ./bundle
       - run: cp -r ./frontend/build ./bundle
       - run: sudo apt install zip
-      - run: zip -r application.zip ./bundle/
-
-      - run: wget https://raw.githubusercontent.com/maldan/npm-semver/main/semver.js
-      - run: node ./semver.js
+      - run: cd ./bundle; zip -r application.zip *; mv application.zip ..
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
           automatic_release_tag: "latest"
           title: "Application Build"
           files: |
             application.zip
-
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}

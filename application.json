@@ -1,0 +1,11 @@
+{
+  "id": "maldan/vsu-password-manager",
+  "title": "Password Manager",
+  "description": "Password Manager",
+  "platform": "nodejs",
+  "cwd": "backend",
+  "cli": {
+    "start": "npm run start port=%port% apiUrl=%apiUrl% appId=%appId% session=%session%",
+    "watch": "npm run watch"
+  }
+}
