@@ -8,35 +8,30 @@ import { hideBin } from 'yargs/helpers';
 
 (async () => {
   const argv = Yargs(hideBin(process.argv)).argv;
-  /*let port = 0;
-  console.log(argv);
-  if (argv.debug === 'true') {
-    port = 16000;
-  } else {
-    port = await Portfinder.getPortPromise({
-      port: 40000, // minimum port
-      stopPort: 50000, // maximum port
-    });
-  }*/
 
-  const port = argv.port || 16000;
-  console.log(port);
+  // Find random port or get from args
+  const port =
+    Number(argv.port) ||
+    (await Portfinder.getPortPromise({
+      port: 40000,
+      stopPort: 50000,
+    }));
 
+  // Start web server
   const buildPath = process.cwd().replace(/\\/g, '/') + '/build';
   const web = new WebServer([new WS_Router('', [], [buildPath])]);
-  web.listen(Number(port));
+  web.listen(port);
 
-  const child = WebView.spawn({
-    // options for webview
-    title: 'My App',
-    width: 1280,
-    height: 720,
-    url: `http://localhost:${port}/index.html`,
-
-    // options for child_process.spawn
-    cwd: process.cwd(),
-  });
-  child.on('exit', () => {
-    process.exit(0);
-  });
+  if (!argv.nogui) {
+    const child = WebView.spawn({
+      title: 'Password Manager',
+      width: 1280,
+      height: 720,
+      url: `http://localhost:${port}/index.html`,
+      cwd: process.cwd(),
+    });
+    child.on('exit', () => {
+      process.exit(0);
+    });
+  }
 })();
