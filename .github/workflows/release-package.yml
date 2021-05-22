@@ -31,8 +31,9 @@ jobs:
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
+          title: Release ${{ github.event.release.tag_name }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          title: "Application Build"
+          automatic_release_tag: ${{ github.event.release.tag_name }}
           files: |
             application.zip
