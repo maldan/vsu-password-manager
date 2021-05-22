@@ -20,6 +20,10 @@ jobs:
       - run: wget https://raw.githubusercontent.com/maldan/npm-semver/main/semver.js
       - run: node ./semver.js
 
+      - run: TAG_VERSION=`git tag | sort -V | tail -1`
+      - run: echo "RELEASE_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+      - run: echo ${{ env.RELEASE_VERSION }}
+
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
