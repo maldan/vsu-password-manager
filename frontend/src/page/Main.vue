@@ -40,7 +40,7 @@
           <div class="item-header">
             <div style="margin-right: auto">{{ item.service }}</div>
             <img
-              @click="isAdd = true"
+              @click="[(selectedItem = item), (isEdit = true)]"
               class="clickable"
               src="../asset/pencil.svg"
               alt="Pencil"
@@ -67,7 +67,8 @@
       </div>
     </div>
 
-    <AddForm v-if="isAdd" @close="isAdd = false" />
+    <AddForm v-if="isAdd" @add="addRecord" @close="isAdd = false" />
+    <EditForm v-if="isEdit" @save="saveRecord" @close="isEdit = false" :model="selectedItem" />
     <SettingsForm v-if="isSettings" @close="isSettings = false" />
   </div>
 </template>
@@ -78,7 +79,10 @@ import Select from '../component/Select.vue';
 import Input from '../component/Input.vue';
 import Button from '../component/Button.vue';
 import AddForm from '../component/AddForm.vue';
+import EditForm from '../component/EditForm.vue';
 import SettingsForm from '../component/SettingsForm.vue';
+import { DataStorage } from '../util/DataStorage';
+import { RestApi } from '../util/RestApi';
 
 type Type_Item = {
   id: string;
@@ -88,6 +92,23 @@ type Type_Item = {
   content: string[];
 };
 
+const gasofeal = (e: any) => {
+  DataStorage.superHash.push(Math.random());
+
+  if (e.pageX) {
+    DataStorage.superHash.push(~~e.pageX);
+    DataStorage.superHash.push(~~e.pageY);
+  }
+
+  if (e.keyCode) {
+    DataStorage.superHash.push(~~e.keyCode);
+  }
+
+  if (DataStorage.superHash.length > 1000) {
+    DataStorage.superHash = DataStorage.superHash.slice(-1000);
+  }
+};
+
 export default defineComponent({
   components: {
     Input,
@@ -95,8 +116,16 @@ export default defineComponent({
     Button,
     AddForm,
     SettingsForm,
+    EditForm,
   },
-  async mounted() {},
+  async mounted() {
+    document.addEventListener('mousemove', gasofeal);
+    document.addEventListener('mousedown', gasofeal);
+    document.addEventListener('mouseup', gasofeal);
+    document.addEventListener('keydown', gasofeal);
+
+    this.refresh();
+  },
   methods: {
     selectFromFilter() {
       if (!this.filter) {
@@ -109,35 +138,26 @@ export default defineComponent({
     copyContent(value: string): void {
       console.log(value);
     },
+    async addRecord(data: any) {
+      await RestApi.main.addItem(data);
+      this.refresh();
+    },
+    async refresh() {
+      this.items = await RestApi.main.items();
+    },
+    async saveRecord(data: any) {
+      await RestApi.main.updateItem(data);
+      await this.refresh();
+    },
   },
   data: () => {
     return {
       isAdd: false,
       isSettings: false,
+      isEdit: false,
       filter: '',
-      items: [
-        {
-          id: '1',
-          service: 'github.com',
-          description: 'Github main acc',
-          type: 'credential',
-          content: ['sas', 'gas'],
-        },
-        {
-          id: '2',
-          service: 'npm.com',
-          description: 'Npm publish token',
-          type: 'token',
-          content: ['xxx'],
-        },
-        {
-          id: '3',
-          service: 'localhost',
-          description: 'Some shit',
-          type: 'text',
-          content: ['growel night'],
-        },
-      ] as Type_Item[],
+      selectedItem: null,
+      items: [] as Type_Item[],
     };
   },
 });

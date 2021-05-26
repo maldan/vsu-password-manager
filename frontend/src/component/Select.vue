@@ -8,10 +8,15 @@
         style="width: 17px"
       />
     </div>
-    <input type="text" :placeholder="placeholder" />
-    <button :class="$style.icon">
+    <div :class="$style.input">{{ modelValue || placeholder }}</div>
+    <button @click="isOpen = !isOpen" :class="$style.icon">
       <img src="../asset/arrow.down.svg" alt="Settings" draggable="false" style="width: 17px" />
     </button>
+    <div v-if="isOpen" :class="$style.items">
+      <div @click="[select(x), (isOpen = false)]" :class="$style.item" v-for="x in items" :key="x">
+        {{ x }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,11 +27,19 @@ export default defineComponent({
   props: {
     placeholder: String,
     icon: String,
+    items: Array,
+    modelValue: String,
   },
   async mounted() {},
-  methods: {},
+  methods: {
+    select(x: unknown) {
+      this.$emit('update:modelValue', x);
+    },
+  },
   data: () => {
-    return {};
+    return {
+      isOpen: false,
+    };
   },
 });
 </script>
@@ -36,6 +49,23 @@ export default defineComponent({
   display: flex;
   align-items: center;
   flex: 1;
+  position: relative;
+
+  .items {
+    position: absolute;
+    left: 0;
+    top: 40px;
+    width: 100%;
+
+    .item {
+      cursor: pointer;
+      background: #585858;
+      padding: 10px 15px;
+      border-bottom: 1px solid #333333;
+      color: #9d9d9d;
+      user-select: none;
+    }
+  }
 
   .icon {
     flex: none;
@@ -60,7 +90,7 @@ export default defineComponent({
     }
   }
 
-  input {
+  .input {
     box-sizing: border-box;
     background: #3d3d3d;
     color: #9d9d9d;

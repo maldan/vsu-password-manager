@@ -42,6 +42,21 @@ export default defineComponent({
   display: flex;
   align-items: center;
 
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &:active {
+      position: relative;
+      opacity: 0.6;
+      top: 1px;
+    }
+  }
+
   img {
     display: block;
     margin-left: auto;

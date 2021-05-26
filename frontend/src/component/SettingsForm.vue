@@ -2,9 +2,26 @@
   <!-- Add forms -->
   <div :class="$style.container">
     <div :class="$style.form" class="shadow">
-      <Input icon="key" placeholder="Old master password..." style="margin-bottom: 10px" />
-      <Input icon="key" placeholder="New master Password..." style="margin-bottom: 10px" />
-      <Button @click="$emit('close')" text="Save" style="margin-bottom: 10px" />
+      <Input
+        icon="key"
+        placeholder="Old master password..."
+        style="margin-bottom: 10px"
+        v-model="oldPassword"
+      />
+      <Input
+        :functionClick="generatePassword"
+        functionIcon="copy"
+        icon="key"
+        placeholder="New master Password..."
+        style="margin-bottom: 10px"
+        v-model="newPassword"
+      />
+      <Button
+        :disabled="isDisabled()"
+        @click="$emit('close')"
+        text="Save"
+        style="margin-bottom: 10px"
+      />
       <Button @click="$emit('close')" text="Cancel" />
     </div>
   </div>
@@ -15,6 +32,7 @@ import { defineComponent } from 'vue';
 import Select from './Select.vue';
 import Input from './Input.vue';
 import Button from './Button.vue';
+import { DataStorage } from '../util/DataStorage';
 
 export default defineComponent({
   props: {
@@ -27,9 +45,19 @@ export default defineComponent({
     Button,
   },
   async mounted() {},
-  methods: {},
+  methods: {
+    generatePassword() {
+      return DataStorage.generatePassword();
+    },
+    isDisabled() {
+      return !(this.oldPassword && this.newPassword);
+    },
+  },
   data: () => {
-    return {};
+    return {
+      oldPassword: '',
+      newPassword: '',
+    };
   },
 });
 </script>

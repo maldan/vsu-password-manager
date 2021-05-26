@@ -2,13 +2,6 @@
   <!-- Add forms -->
   <div :class="$style.container">
     <div :class="$style.form" class="shadow">
-      <Select
-        icon="menu"
-        placeholder="Type..."
-        style="margin-bottom: 10px"
-        :items="['credential', 'token', 'text']"
-        v-model="type"
-      />
       <Input
         icon="service"
         placeholder="Service..."
@@ -16,20 +9,20 @@
         v-model="service"
       />
       <Input
-        icon="service"
+        icon="text"
         placeholder="Description..."
         style="margin-bottom: 10px"
         v-model="description"
       />
       <Input
-        v-if="type === 'credential'"
+        v-if="model.type === 'credential'"
         icon="login"
         placeholder="Login..."
         style="margin-bottom: 10px"
         v-model="login"
       />
       <Input
-        v-if="type === 'credential'"
+        v-if="model.type === 'credential'"
         icon="key"
         :functionClick="generatePassword"
         functionIcon="copy"
@@ -38,26 +31,20 @@
         v-model="password"
       />
       <Input
-        v-if="type === 'token'"
+        v-if="model.type === 'token'"
         icon="key"
         placeholder="Token..."
         style="margin-bottom: 10px"
         v-model="login"
       />
       <Input
-        v-if="type === 'text'"
+        v-if="model.type === 'text'"
         icon="key"
         placeholder="Text..."
         style="margin-bottom: 10px"
         v-model="login"
       />
-      <Button
-        :disabled="isDisabled()"
-        @click="add"
-        icon="add"
-        text="Add"
-        style="margin-bottom: 10px"
-      />
+      <Button :disabled="isDisabled()" @click="save" text="Save" style="margin-bottom: 10px" />
       <Button @click="$emit('close')" text="Cancel" />
     </div>
   </div>
@@ -65,46 +52,53 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Select from '../component/Select.vue';
-import Input from '../component/Input.vue';
-import Button from '../component/Button.vue';
+import Select from './Select.vue';
+import Input from './Input.vue';
+import Button from './Button.vue';
 import { DataStorage } from '../util/DataStorage';
 
 export default defineComponent({
   props: {
     placeholder: String,
     icon: String,
+    model: Object,
   },
   components: {
     Select,
     Input,
     Button,
   },
-  async mounted() {},
+  async mounted() {
+    if (this.model) {
+      this.service = this.model.service;
+      this.description = this.model.description;
+      this.login = this.model.content[0];
+      this.password = this.model.content[1];
+    }
+  },
 
   methods: {
     generatePassword() {
       return DataStorage.generatePassword();
     },
-    add() {
-      this.$emit('add', {
+    save() {
+      this.$emit('save', {
+        id: this.model?.id || '',
         service: this.service,
         description: this.description,
-        type: this.type,
-        login: this.login,
-        password: this.password,
+        content: [this.login, this.password],
       });
       this.$emit('close');
     },
     isDisabled() {
-      return !(this.service && this.description && this.type && this.login);
+      return !(this.service && this.description && this.login);
     },
   },
   data: () => {
     return {
       service: '',
       description: '',
-      type: '',
+
       login: '',
       password: '',
     };
