@@ -3,20 +3,13 @@
   <div :class="$style.container">
     <div :class="$style.form" class="shadow">
       <Input
-        :functionClick="generatePassword"
-        functionIcon="copy"
         icon="key"
-        placeholder="New master Password..."
+        type="password"
+        placeholder="Enter master password..."
         style="margin-bottom: 10px"
-        v-model="newPassword"
+        v-model="password"
       />
-      <Button
-        :disabled="isDisabled()"
-        @click="$emit('close')"
-        text="Save"
-        style="margin-bottom: 10px"
-      />
-      <Button @click="$emit('close')" text="Cancel" />
+      <Button @click="unlock" icon="lock" text="Unlock" />
     </div>
   </div>
 </template>
@@ -26,7 +19,7 @@ import { defineComponent } from 'vue';
 import Select from './Select.vue';
 import Input from './Input.vue';
 import Button from './Button.vue';
-import { DataStorage } from '../util/DataStorage';
+import SHA1 from 'sha1';
 
 export default defineComponent({
   props: {
@@ -39,17 +32,15 @@ export default defineComponent({
     Button,
   },
   async mounted() {},
+
   methods: {
-    generatePassword() {
-      return DataStorage.generatePassword();
-    },
-    isDisabled() {
-      return !this.newPassword;
+    unlock() {
+      this.$emit('unlock', SHA1(this.password));
     },
   },
   data: () => {
     return {
-      newPassword: '',
+      password: '',
     };
   },
 });

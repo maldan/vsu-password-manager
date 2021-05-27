@@ -1,11 +1,6 @@
 <template>
   <div class="main">
-    <!-- <div class="form shadow">
-      <div class="info">Enter master password to get access</div>
-      <input type="text" placeholder="Enter master password..." />
-      <button>Unlock</button>
-    </div> -->
-    <div class="header">
+    <div v-if="masterPassword" class="header">
       <Button icon="key" />
 
       <Input icon="search" placeholder="Filter..." v-model="filter" />
@@ -14,7 +9,7 @@
       <Button @click="isSettings = true" icon="settings" />
     </div>
 
-    <div class="items">
+    <div v-if="masterPassword" class="items">
       <div v-for="item in selectFromFilter()" :key="item.id" class="shadow item">
         <div style="width: 80px; display: flex; align-items: center; justify-content: center">
           <img
@@ -38,7 +33,7 @@
         </div>
         <div style="flex: 1; margin-left: auto; display: flex; flex-direction: column">
           <div class="item-header">
-            <div style="margin-right: auto">{{ item.service }}</div>
+            <div class="item-service" style="margin-right: auto">{{ item.service }}</div>
             <img
               @click="[(selectedItem = item), (isEdit = true)]"
               class="clickable"
@@ -47,14 +42,14 @@
               draggable="false"
             />
             <img
-              @click="copyContent(item.content[0])"
+              @click="copyToBuffer(item.content[0])"
               class="clickable"
               src="../asset/copy.svg"
               alt="Copy"
               draggable="false"
             />
             <img
-              @click="copyContent(item.content[1])"
+              @click="copyToBuffer(item.content[1])"
               v-if="item.type === 'credential'"
               class="clickable"
               src="../asset/copy.svg"
@@ -62,14 +57,21 @@
               draggable="false"
             />
           </div>
-          <div class="item-content">{{ item.description }}</div>
+          <div class="item-description">{{ item.description }}</div>
         </div>
       </div>
     </div>
 
     <AddForm v-if="isAdd" @add="addRecord" @close="isAdd = false" />
-    <EditForm v-if="isEdit" @save="saveRecord" @close="isEdit = false" :model="selectedItem" />
+    <EditForm
+      v-if="isEdit"
+      @delete="deleteRecord"
+      @save="saveRecord"
+      @close="isEdit = false"
+      :model="selectedItem"
+    />
     <SettingsForm v-if="isSettings" @close="isSettings = false" />
+    <UnlockForm v-if="!masterPassword" @unlock="unlock" />
   </div>
 </template>
 
@@ -81,8 +83,10 @@ import Button from '../component/Button.vue';
 import AddForm from '../component/AddForm.vue';
 import EditForm from '../component/EditForm.vue';
 import SettingsForm from '../component/SettingsForm.vue';
+import UnlockForm from '../component/UnlockForm.vue';
 import { DataStorage } from '../util/DataStorage';
 import { RestApi } from '../util/RestApi';
+import StringCrypto from 'string-crypto';
 
 type Type_Item = {
   id: string;
@@ -91,6 +95,8 @@ type Type_Item = {
   type: string;
   content: string[];
 };
+
+const { encryptString, decryptString } = new StringCrypto();
 
 const gasofeal = (e: any) => {
   DataStorage.superHash.push(Math.random());
@@ -117,14 +123,13 @@ export default defineComponent({
     AddForm,
     SettingsForm,
     EditForm,
+    UnlockForm,
   },
   async mounted() {
     document.addEventListener('mousemove', gasofeal);
     document.addEventListener('mousedown', gasofeal);
     document.addEventListener('mouseup', gasofeal);
     document.addEventListener('keydown', gasofeal);
-
-    this.refresh();
   },
   methods: {
     selectFromFilter() {
@@ -139,15 +144,52 @@ export default defineComponent({
       console.log(value);
     },
     async addRecord(data: any) {
+      data.service = encryptString(data.service, this.masterPassword);
+      data.description = encryptString(data.description, this.masterPassword);
+      data.content = data.content.map((x: string) => {
+        return encryptString(x, this.masterPassword);
+      });
       await RestApi.main.addItem(data);
       this.refresh();
     },
+    async deleteRecord(id: string) {
+      await RestApi.main.deleteItem(id);
+      this.isEdit = false;
+      this.refresh();
+    },
     async refresh() {
-      this.items = await RestApi.main.items();
+      this.items = (await RestApi.main.items()).map((x: Type_Item) => {
+        try {
+          x.service = decryptString(x.service, this.masterPassword);
+          x.description = decryptString(x.description, this.masterPassword);
+          x.content = x.content.map((x: string) => {
+            return decryptString(x, this.masterPassword);
+          });
+        } catch {}
+        return x;
+      });
     },
     async saveRecord(data: any) {
       await RestApi.main.updateItem(data);
       await this.refresh();
+    },
+    async unlock(password: string) {
+      this.masterPassword = password;
+
+      this.refresh();
+
+      /*
+      let encryptedString = encryptString('12222', '234234234');
+      console.log('Encrypted String:', encryptedString);
+      console.log('Decrypted String:', decryptString(encryptedString, '234234234'));*/
+    },
+    copyToBuffer(data: string) {
+      var tempInput = document.createElement('input');
+      tempInput.value = data;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
     },
   },
   data: () => {
@@ -158,6 +200,7 @@ export default defineComponent({
       filter: '',
       selectedItem: null,
       items: [] as Type_Item[],
+      masterPassword: '',
     };
   },
 });
@@ -173,19 +216,22 @@ export default defineComponent({
 
   .items {
     padding: 10px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    /*display: flex;
+    flex-wrap: wrap;*/
 
     .item {
       background: #3d3d3d;
       display: flex;
-      width: 340px;
+      // width: 340px;
       height: 100px;
       border-radius: 6px;
       overflow: hidden;
       flex: none;
-      margin-right: 10px;
-      margin-bottom: 10px;
+      //margin-right: 10px;
+      //margin-bottom: 10px;
 
       img {
         user-select: none;
@@ -203,12 +249,24 @@ export default defineComponent({
         border-bottom: 1px solid #313131;
         border-left: 1px solid #313131;
 
+        .item-service {
+          max-width: 180px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
         > img {
           margin-left: 10px;
         }
       }
 
-      .item-content {
+      .item-description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+      }
+
+      .item-description {
         flex: 1;
         background: #464646;
         color: #8b8b8b;
@@ -232,6 +290,38 @@ export default defineComponent({
       height: 42px;
       flex: none;
       margin-right: 10px;
+    }
+  }
+}
+
+@media (max-width: 1600px) {
+  .main {
+    .items {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+}
+
+@media (max-width: 1280px) {
+  .main {
+    .items {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .main {
+    .items {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .main {
+    .items {
+      grid-template-columns: 1fr;
     }
   }
 }

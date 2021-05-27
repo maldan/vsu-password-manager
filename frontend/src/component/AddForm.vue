@@ -91,8 +91,7 @@ export default defineComponent({
         service: this.service,
         description: this.description,
         type: this.type,
-        login: this.login,
-        password: this.password,
+        content: [this.login, this.password],
       });
       this.$emit('close');
     },

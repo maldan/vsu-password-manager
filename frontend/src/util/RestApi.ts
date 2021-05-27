@@ -10,6 +10,9 @@ export const RestApi = {
     async addItem(args: { type: string; service: string; description: string; content: string[] }) {
       return (await Axios.post(`${API_URL}/main/item`, args)).data.response;
     },
+    async deleteItem(id: string) {
+      return (await Axios.delete(`${API_URL}/main/item?id=${id}`)).data.response;
+    },
     async updateItem(args: {
       id: string;
       service: string;

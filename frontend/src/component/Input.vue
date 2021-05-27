@@ -8,7 +8,7 @@
         style="width: 17px"
       />
     </div>
-    <input type="text" :placeholder="placeholder" :value="modelValue" @input="change" />
+    <input :type="type" :placeholder="placeholder" :value="modelValue" @input="change" />
 
     <button v-if="functionIcon" :class="$style.icon" @click="clickOnFunction">
       <img
@@ -31,6 +31,7 @@ export default defineComponent({
     functionIcon: String,
     functionClick: Function,
     modelValue: String,
+    type: String,
   },
   async mounted() {},
   methods: {

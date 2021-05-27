@@ -3,9 +3,7 @@
   "version": "1.0.7",
   "description": "Password manager",
   "main": "index.js",
-  "scripts": {
-    "start": "cd backend && npm run start"
-  },
+  "scripts": {},
   "keywords": [
     "password manager"
   ],

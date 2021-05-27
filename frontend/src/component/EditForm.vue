@@ -44,6 +44,7 @@
         style="margin-bottom: 10px"
         v-model="login"
       />
+      <Button @click="deleteItem" icon="delete" text="Delete" style="margin-bottom: 10px" />
       <Button :disabled="isDisabled()" @click="save" text="Save" style="margin-bottom: 10px" />
       <Button @click="$emit('close')" text="Cancel" />
     </div>
@@ -78,6 +79,11 @@ export default defineComponent({
   },
 
   methods: {
+    deleteItem() {
+      if (confirm('Are you sure?')) {
+        this.$emit('delete', this.model?.id);
+      }
+    },
     generatePassword() {
       return DataStorage.generatePassword();
     },

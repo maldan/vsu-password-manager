@@ -63,4 +63,13 @@ export class MainApi {
       DB.main.save('main', db);
     }
   }
+
+  @Config({
+    useJsonWrapper: true,
+  })
+  static delete_item({ id }: { id: string }): void {
+    const db = DB.main.getOrFail('main');
+    db.items = db.items.filter((x) => x.id !== id);
+    DB.main.save('main', db);
+  }
 }

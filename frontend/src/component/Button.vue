@@ -43,8 +43,10 @@ export default defineComponent({
   align-items: center;
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.8;
     cursor: not-allowed;
+    background: darken(#515151, 2%);
+    color: darken(#9d9d9d, 20%);
 
     &:hover {
       opacity: 0.7;
@@ -54,6 +56,11 @@ export default defineComponent({
       position: relative;
       opacity: 0.6;
       top: 1px;
+    }
+
+    img {
+      filter: grayscale(2);
+      opacity: 0.4;
     }
   }
 

@@ -6,13 +6,14 @@
   "scripts": {
     "start": "node --unhandled-rejections=strict ./bin/index.js",
     "dev": "tsc && node --unhandled-rejections=strict ./bin/index.js --nogui --port=16000",
-    "build": "tsc",
+    "build": "tsc && node ./bin/build.js",
     "test": "mocha -r ts-node/register test/**/*.test.ts"
   },
   "keywords": [],
   "author": "Maldan",
   "license": "MIT",
   "dependencies": {
+    "@maldan/tslib-gam-builder": "file:../../../../ts_lib/gam-builder",
     "@maldan/tslib-rest-server": "^4.0.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^9.1.0",
