@@ -20,4 +20,5 @@ build({
     'require-directory',
   ],
   copyModules: ['webview'],
+  zipOut: './../application.zip',
 });
