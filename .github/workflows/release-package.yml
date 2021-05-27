@@ -19,16 +19,7 @@ jobs:
       - run: git config --global user.email blackwanted@yandex.ru
 
       - run: npm install -g nexe
-      - run: cd backend && npm ci && npm run build && cd bin && nexe ./index.js -t windows-x86-14.15.3 -o app.exe -r "../node_modules/{y18n,yargs-parser,cliui,string-width,strip-ansi,ansi-regex,is-fullwidth-code-point,emoji-regex,wrap-ansi,escalade,get-caller-file,require-directory}/**/*"
-      - run: cd frontend && npm ci && npm run build
-
-      - run: mkdir -p bundle/node_modules
-      - run: cp ./backend/bin/app.exe ./bundle
-      - run: cp -r ./backend/node_modules/webview ./bundle/node_modules
-      - run: cp -r ./frontend/build ./bundle
-      - run: sudo apt install zip
-      - run: cd ./bundle; zip -r application.zip *; mv application.zip ..
-
+      - run: cd backend && npm ci && npm run build
       - run: echo "RELEASE_VERSION=`git tag | sort -V | tail -1`" >> $GITHUB_ENV
 
       - uses: "marvinpinto/action-automatic-releases@latest"

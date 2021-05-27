@@ -5,6 +5,8 @@ import Portfinder from 'portfinder';
 
 import Yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
+import { DB } from './db/DB';
+import { MainApi } from './rest/MainApi';
 
 (async () => {
   const argv = Yargs(hideBin(process.argv)).argv;
@@ -17,9 +19,12 @@ import { hideBin } from 'yargs/helpers';
       stopPort: 50000,
     }));
 
+  // Init db
+  DB.init();
+
   // Start web server
   const buildPath = process.cwd().replace(/\\/g, '/') + '/build';
-  const web = new WebServer([new WS_Router('', [], [buildPath])]);
+  const web = new WebServer([new WS_Router('api', [MainApi]), new WS_Router('', [], [buildPath])]);
   web.listen(port);
 
   if (!argv.nogui) {
